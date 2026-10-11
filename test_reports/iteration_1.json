@@ -1,0 +1,34 @@
+{
+  "summary": "First-pass full-stack test for Dr.D. Backend: 21/21 pytest tests pass (auth, role protection, doctor settings, patient queue join/duplicate/checkin/cancel, walkin, call-next, delay, daily_cap, accepting toggle, staff CRUD + login, notifications, ETA math with ahead>=2 raising eta_min). Frontend: patient flow (login -> join queue (#11, Pos 3rd, ETA ~20m) -> check-in -> cancel), notifications bell+items, Dai chat SSE streamed a response, doctor dashboard (current-patient-card, call-next, delay +15m, Settings tab with avg/cap/accepting/save, Staff tab with name/email/password/create), staff dashboard (send-next, add-walkin flow succeeded), register page role picker with doctor-specific fields all verified. Mobile viewport loads. Owner settings reset to defaults post-test.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Doctor dashboard header", "issues": ["Visible placeholder 'Dr. [Your Name]' / '[Your Clinic Name]' / '[City]' is intentional per spec but surfaces to patients too in doctor list; consider replacing with real seeded values or hiding bracketed placeholders in public doctor list."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Optional: seed owner doctor with a real-looking name/clinic/city instead of bracketed placeholders so patient-facing doctor-list is cleaner.",
+    "Optional: /api/clinic/delay has no explicit endpoint to directly SET delay_min; only increments allowed. Minor hardening—consider clamping or allowing direct set for admin reset."
+  ],
+  "critical_code_review_comments": [
+    "server.py (~775 lines) is approaching the 700-line soft limit; consider splitting into modules (auth, queue, clinic, dai).",
+    "login_attempts counter is not reset on partial failures that reach exactly 5 before window expires; consider using TTL index on login_attempts.",
+    "set_auth cookies use SameSite=None,Secure=True which is correct for cross-site; good.",
+    "No rate limit on /api/dai/chat SSE endpoint; a patient could spam Dai; consider per-user rate limit.",
+    "dispatch_alerts runs on every /patient/queue poll (5s) and iterates all entries — fine for small clinics but O(N) notifications writes should be batched or guarded.",
+    "/api/doctors is unauthenticated and lists all doctor emails + phone; consider hiding email/phone from public listing."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100% (21/21)", "frontend": "100% of tested flows"},
+  "test_credentials": "doctor leumas.r8@gmail.com / DrD@Owner2026; staff reception@drd.app / Staff@123; patient patient@drd.app / Patient@123",
+  "seed_data_creation": "Created TEST_Ahead_* and TEST_UI_Walkin walk-in queue entries today; they clear automatically on date rollover (Asia/Kolkata). Owner settings reset to avg_consult_min=10, daily_cap=30, accepting=true, delay_min=0.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest file is sequential-safe when run with -n 0 (default pytest.ini uses -n 2 loadscope which races on shared clinic state like accepting/daily_cap; use `pytest backend/tests/backend_test.py -n 0`). All testids used in review_request are implemented. Playwright login path is /login (not /auth). RolePick only renders in /register when not already authenticated — clear cookies+localStorage before verifying role picker."
+}
