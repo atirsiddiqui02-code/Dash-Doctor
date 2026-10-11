@@ -1,0 +1,116 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@500;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --brand-dark: #172554;
+        --brand: #1e3a8a;
+        --mint: #059669;
+        --mint-soft: #d1fae5;
+        --dai: #34d399;
+        --background: 210 40% 98%;
+        --foreground: 222 47% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 47% 11%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222 47% 11%;
+        --primary: 224 64% 33%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 214 32% 95%;
+        --secondary-foreground: 224 64% 33%;
+        --muted: 214 32% 95%;
+        --muted-foreground: 215 19% 35%;
+        --accent: 152 76% 90%;
+        --accent-foreground: 161 94% 20%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 214 32% 91%;
+        --input: 214 32% 88%;
+        --ring: 224 64% 33%;
+        --radius: 0.85rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+        font-family: "DM Sans", sans-serif;
+        -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4, .font-display {
+        font-family: "Plus Jakarta Sans", sans-serif;
+    }
+    ::selection {
+        background: var(--mint-soft);
+        color: var(--brand-dark);
+    }
+}
+
+.font-mono-num {
+    font-family: "JetBrains Mono", monospace;
+    font-variant-numeric: tabular-nums;
+}
+
+.grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.08;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    border-radius: inherit;
+}
+
+.ticket-surface {
+    background: radial-gradient(120% 140% at 100% 0%, #2547a8 0%, var(--brand) 45%, var(--brand-dark) 100%);
+}
+
+.dai-glow {
+    box-shadow: 0 0 0 6px rgba(52, 211, 153, 0.18), 0 12px 32px -8px rgba(5, 150, 105, 0.55);
+}
+
+.pulse-ring {
+    position: relative;
+}
+.pulse-ring::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    border: 2px solid var(--dai);
+    animation: pulse-ring 1.8s ease-out infinite;
+}
+@keyframes pulse-ring {
+    0% { transform: scale(0.96); opacity: 0.9; }
+    100% { transform: scale(1.12); opacity: 0; }
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--dai);
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+    animation: live-dot 1.6s infinite;
+}
+@keyframes live-dot {
+    0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+    70% { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+.btn-lift {
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.btn-lift:hover { transform: translateY(-1px); }
+.btn-lift:active { transform: translateY(0) scale(0.98); }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+}
